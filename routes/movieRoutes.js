@@ -14,7 +14,7 @@ const router = express.Router();
 
 router.param("id", checkId);
 
-router.route("/").get(getMovies).post(checkMovieBody,createMovie);
+router.route("/").get(getMovies).post(createMovie);
 
 router.route("/:id").get(getMovie).patch(editMovie).delete(deleteMovie);
 
