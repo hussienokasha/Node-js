@@ -5,7 +5,7 @@ import {
   createMovie,
   getMovies,
   checkId,
-  checkMovieBody
+ 
 } from "../controllers/moviesController.js";
 
 import express from "express";
