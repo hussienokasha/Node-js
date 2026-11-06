@@ -11,3 +11,8 @@ ls
 npm i
 apk add npm
 npm i
+git pull origin main
+npm start
+npm start
+cls
+npm start

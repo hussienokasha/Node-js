@@ -3,6 +3,7 @@ import morgan from "morgan";
 import movieRoutes from "./routes/movieRoutes.js";
 
 const app = express();
+app.set('query parser', 'extended');
 app.use(express.json());
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan("dev"));

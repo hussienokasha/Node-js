@@ -5,6 +5,7 @@ import {
   createMovie,
   getMovies,
   checkId,
+  getMostRated
  
 } from "../controllers/moviesController.js";
 
@@ -12,7 +13,10 @@ import express from "express";
 
 const router = express.Router();
 
+
 router.param("id", checkId);
+
+router.route("/most-rated").get(getMostRated,getMovies);
 
 router.route("/").get(getMovies).post(createMovie);
 
