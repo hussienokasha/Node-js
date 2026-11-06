@@ -15,33 +15,35 @@ export const checkId = async (req, res, next, id) => {
   next();
 };
 
-export const getMostRated=  (req, res, next)=>{
-  req.query.sort = "rating";
+export const getMostRated = (req, res, next) => {
+  Object.defineProperty(req, "query", {
+    value: { ...req.query, sort: "-rating" },
+    writable: true,
+    configurable: true,
+    enumerable: true,
+  });
+ 
   next();
-}
+};
 
 export const getMovies = async (req, res) => {
   try {
     const queryStr = { ...req.query };
 
     // Exclude fields from filtering
-    const excludedFields = ["fields","page","limit","sort"];
+    const excludedFields = ["fields", "page", "limit", "sort"];
     excludedFields.forEach((field) => delete queryStr[field]);
 
     // Advanced Filtering
     let query = JSON.stringify(queryStr);
 
-    query = query.replace(
-      /\b(gt|gte|lt|lte)\b/g,
-      (match) => `$${match}`
-    );
+    query = query.replace(/\b(gt|gte|lt|lte)\b/g, (match) => `$${match}`);
 
     query = JSON.parse(query);
-    
 
     // Execute Query
     let finalQuery = Movie.find(query);
-    console.log(finalQuery)
+   
 
     // Field Limiting
     if (req.query.fields) {
@@ -49,12 +51,17 @@ export const getMovies = async (req, res) => {
       finalQuery = finalQuery.select(fields);
     }
 
+    
+
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 5;
 
-    finalQuery = finalQuery.skip((page - 1)*limit).limit(limit)
-    if(req.query.sort){
-      finalQuery = finalQuery.sort(req.query.sort)
+    finalQuery = finalQuery.skip((page - 1) * limit).limit(limit);
+
+    // Sorting
+    
+    if (req.query.sort) {
+      finalQuery = finalQuery.sort(req.query.sort);
     }
     const movies = await finalQuery;
 
@@ -65,7 +72,6 @@ export const getMovies = async (req, res) => {
         movies,
       },
     });
-
   } catch (err) {
     res.status(404).json({
       status: "fail",
@@ -73,7 +79,6 @@ export const getMovies = async (req, res) => {
     });
   }
 };
-
 
 export const createMovie = async (req, res) => {
   try {

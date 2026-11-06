@@ -16,9 +16,9 @@ const router = express.Router();
 
 router.param("id", checkId);
 
-router.route("/most-rated").get(getMostRated,getMovies);
 
 router.route("/").get(getMovies).post(createMovie);
+router.route("/most-rated").get(getMostRated,getMovies);
 
 router.route("/:id").get(getMovie).patch(editMovie).delete(deleteMovie);
 
