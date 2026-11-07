@@ -1,7 +1,6 @@
-import fs from "fs";
-
 import Movie from "../models/movieModel.js";
 
+import APIFeatures from "../utils/ApiFeatures.js";
 export const checkId = async (req, res, next, id) => {
   try {
     await Movie.findById({ _id: req.params.id });
@@ -22,48 +21,19 @@ export const getMostRated = (req, res, next) => {
     configurable: true,
     enumerable: true,
   });
- 
+
   next();
 };
 
 export const getMovies = async (req, res) => {
   try {
-    const queryStr = { ...req.query };
+    const features = new APIFeatures(Movie.find(), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
 
-    // Exclude fields from filtering
-    const excludedFields = ["fields", "page", "limit", "sort"];
-    excludedFields.forEach((field) => delete queryStr[field]);
-
-    // Advanced Filtering
-    let query = JSON.stringify(queryStr);
-
-    query = query.replace(/\b(gt|gte|lt|lte)\b/g, (match) => `$${match}`);
-
-    query = JSON.parse(query);
-
-    // Execute Query
-    let finalQuery = Movie.find(query);
-   
-
-    // Field Limiting
-    if (req.query.fields) {
-      const fields = req.query.fields.split(",").join(" ");
-      finalQuery = finalQuery.select(fields);
-    }
-
-    
-
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 5;
-
-    finalQuery = finalQuery.skip((page - 1) * limit).limit(limit);
-
-    // Sorting
-    
-    if (req.query.sort) {
-      finalQuery = finalQuery.sort(req.query.sort);
-    }
-    const movies = await finalQuery;
+    const movies = await features.query;
 
     res.status(200).json({
       status: "success",

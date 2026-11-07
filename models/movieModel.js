@@ -19,6 +19,10 @@ const movieSchema = new mongoose.Schema({
     max: [10, "Rating cannot exceed 10"],
     default: 1.0,
   },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 const movieModel = mongoose.model("Movie", movieSchema);
 
