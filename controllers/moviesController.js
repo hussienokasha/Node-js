@@ -127,3 +127,32 @@ export const deleteMovie = async (req, res) => {
     });
   }
 };
+
+export const getMovieStats = async (req, res) => {
+  try {
+    const stats = await Movie.aggregate([
+      {$group:{
+        _id:"$year",
+        numMovies:{$sum:1},
+        avgRating:{$avg:"$rating"},
+        minRating:{$min:"$rating"},
+        maxRating:{$max:"$rating"},
+      }},{match:{'rating':{$gte:4}}},
+      {$sort:{'rating':-1}},{
+        $limit:3
+      }
+    ]);
+    res.status(200).json({
+      status: "success",
+      data: {
+        // count: stats.length,
+        stats,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: "fail",
+      message: err.message,
+    });
+  }
+};
